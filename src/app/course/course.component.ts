@@ -40,7 +40,10 @@ export class CourseComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+<<<<<<< HEAD
     // Load lessons
+=======
+>>>>>>> b9ccd68ec3df29f1b58fd15b5cea943533adee9a
     combineLatest(
       this.paginator.page.pipe(startWith({ pageIndex: 0, pageSize: 5 } as PageEvent)),
       this.sort.sortChange.pipe(
