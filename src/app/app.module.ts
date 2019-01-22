@@ -16,6 +16,18 @@ import { CoursesCardListComponent } from './courses-card-list/courses-card-list.
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatListModule } from '@angular/material/list'
 import { MatToolbarModule } from '@angular/material/toolbar'
+import { CourseComponent } from './course/course.component'
+import {
+  MatTableModule,
+  MatPaginatorModule,
+  MatSortModule,
+  MatInputModule
+} from '@angular/material'
+import { CoursesService } from './services/courses.service'
+import { CourseResolver } from './services/course.resolver'
+import { HttpClientModule } from '@angular/common/http'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { ReactiveFormsModule } from '@angular/forms'
 
 @NgModule({
   declarations: [
@@ -23,11 +35,14 @@ import { MatToolbarModule } from '@angular/material/toolbar'
     HomeComponent,
     AboutComponent,
     TopMenuComponent,
-    CoursesCardListComponent
+    CoursesCardListComponent,
+    CourseComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    HttpClientModule,
+    ReactiveFormsModule,
     MatMenuModule,
     MatButtonModule,
     MatIconModule,
@@ -36,9 +51,14 @@ import { MatToolbarModule } from '@angular/material/toolbar'
     AppRoutingModule,
     MatSidenavModule,
     MatListModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
-  providers: [],
+  providers: [CoursesService, CourseResolver],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
