@@ -2,34 +2,49 @@
   <h2>{{ course?.description }}</h2>
   <img class="course-thumbnail"
        [src]="course?.iconUrl" />
-  <mat-form-field class="full-width">
-    <input [formControl]="filter"
-           matInput
-           placeholder="Filter lessons" />
-  </mat-form-field>
 
-  <mat-table class="lessons-table mat-elevation-z8"
-             [dataSource]="dataSource">
-    <!-- seqno -->
-    <ng-container matColumnDef="seqNo">
-      <mat-header-cell *matHeaderCellDef>#</mat-header-cell>
-      <mat-cell *matCellDef="let lesson">{{ lesson.seqNo }}</mat-cell>
-    </ng-container>
-    <!-- description -->
-    <ng-container matColumnDef="description">
-      <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
-      <mat-cell class="description-cell"
-                *matCellDef="let lesson">{{
-        lesson.description
-      }}</mat-cell>
-    </ng-container>
-    <!-- duration -->
-    <ng-container matColumnDef="duration">
-      <mat-header-cell *matHeaderCellDef>Duration</mat-header-cell>
-      <mat-cell class="duration-cell"
-                *matCellDef="let lesson">{{ lesson.duration }}</mat-cell>
-    </ng-container>
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-  </mat-table>
+  <div class="table-container mat-elevation-z8">
+    <mat-form-field>
+      <input [formControl]="filter"
+             matInput
+             placeholder="Filter lessons" />
+    </mat-form-field>
+    <!-- <div class="spinner-container">
+      <mat-spinner></mat-spinner>
+    </div> -->
+    <div class="spinner-container"
+         *ngIf="dataSource.loading$ | async">
+      <mat-spinner></mat-spinner>
+    </div>
+    <mat-table class="lessons-table "
+               [dataSource]="dataSource">
+      <!-- seqno -->
+      <ng-container matColumnDef="seqNo">
+        <mat-header-cell *matHeaderCellDef>#</mat-header-cell>
+        <mat-cell *matCellDef="let lesson">{{ lesson.seqNo }}</mat-cell>
+      </ng-container>
+      <!-- description -->
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
+        <mat-cell class="description-cell"
+                  *matCellDef="let lesson">{{
+              lesson.description
+            }}</mat-cell>
+      </ng-container>
+      <!-- duration -->
+      <ng-container matColumnDef="duration">
+        <mat-header-cell *matHeaderCellDef>Duration</mat-header-cell>
+        <mat-cell class="duration-cell"
+                  *matCellDef="let lesson">{{ lesson.duration }}</mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+
+    <mat-paginator #paginator
+                   [pageSizeOptions]="[5, 10, 20]"
+                   [length]="course?.lessonsCount"
+                   showFirstLastButtons></mat-paginator>
+  </div>
+
 </div>

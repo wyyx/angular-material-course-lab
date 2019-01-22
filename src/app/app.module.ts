@@ -21,7 +21,8 @@ import {
   MatTableModule,
   MatPaginatorModule,
   MatSortModule,
-  MatInputModule
+  MatInputModule,
+  MatProgressSpinnerModule
 } from '@angular/material'
 import { CoursesService } from './services/courses.service'
 import { CourseResolver } from './services/course.resolver'
@@ -56,7 +57,8 @@ import { ReactiveFormsModule } from '@angular/forms'
     MatPaginatorModule,
     MatSortModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatProgressSpinnerModule
   ],
   providers: [CoursesService, CourseResolver],
   bootstrap: [AppComponent]

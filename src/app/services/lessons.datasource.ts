@@ -3,10 +3,12 @@ import { Lesson } from '../model/lesson'
 import { Observable, BehaviorSubject, Subscription, of, interval } from 'rxjs'
 import { CollectionViewer } from '@angular/cdk/collections'
 import { CoursesService } from './courses.service'
-import { catchError, tap } from 'rxjs/operators'
+import { catchError, tap, finalize } from 'rxjs/operators'
 
 export class LessonsDataSource extends DataSource<Lesson> {
-  lessonsSubject = new BehaviorSubject<Lesson[]>([])
+  private lessonsSubject$ = new BehaviorSubject<Lesson[]>([])
+  private loadingSubject$ = new BehaviorSubject<boolean>(false)
+  loading$: Observable<boolean> = this.loadingSubject$.asObservable()
 
   constructor(private coursesService: CoursesService) {
     super()
@@ -19,20 +21,25 @@ export class LessonsDataSource extends DataSource<Lesson> {
     pageIndex: number,
     pageSize: number
   ) {
+    this.loadingSubject$.next(true)
+
     return this.coursesService
       .findLessons(courseId, filter, sortDirection, pageIndex, pageSize)
       .pipe(
         tap(v => console.log('loadLessons')),
         catchError(error => of([])),
-        tap(lessons => this.lessonsSubject.next(lessons))
+        tap(lessons => this.lessonsSubject$.next(lessons)),
+        tap(() => this.loadingSubject$.next(false)),
+        finalize(() => this.loadingSubject$.next(false))
       )
   }
 
   connect(collectionViewer: CollectionViewer): Observable<Lesson[]> {
-    return this.lessonsSubject.asObservable()
+    return this.lessonsSubject$.asObservable()
   }
 
   disconnect(collectionViewer: CollectionViewer): void {
-    this.lessonsSubject.complete()
+    this.lessonsSubject$.complete()
+    this.loadingSubject$.complete()
   }
 }

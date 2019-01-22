@@ -1,24 +1,19 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core'
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { FormControl } from '@angular/forms'
+import { MatPaginator, PageEvent } from '@angular/material'
 import { ActivatedRoute } from '@angular/router'
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material'
-import { Course } from '../model/course'
-import { CoursesService } from '../services/courses.service'
+import { Subject } from 'rxjs'
 import {
   debounceTime,
   distinctUntilChanged,
-  startWith,
-  tap,
-  timeout,
-  takeUntil,
-  take,
   mergeMap,
-  map
+  startWith,
+  takeUntil,
+  tap
 } from 'rxjs/operators'
-import { merge } from 'rxjs/observable/merge'
-import { fromEvent } from 'rxjs/observable/fromEvent'
+import { Course } from '../model/course'
+import { CoursesService } from '../services/courses.service'
 import { LessonsDataSource } from '../services/lessons.datasource'
-import { Subject } from 'rxjs'
-import { FormControl } from '@angular/forms'
 
 @Component({
   selector: 'course',
@@ -32,26 +27,39 @@ export class CourseComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns = ['seqNo', 'description', 'duration']
   filter = new FormControl('')
 
-  @ViewChild('filterInput') filterInput: ElementRef
+  @ViewChild('paginator') paginator: MatPaginator
 
   constructor(private route: ActivatedRoute, private coursesService: CoursesService) {}
 
   ngOnInit() {
     this.course = this.route.snapshot.data['course']
     this.dataSource = new LessonsDataSource(this.coursesService)
+  }
 
-    this.filter.valueChanges
+  ngAfterViewInit() {
+    this.paginator.page
       .pipe(
-        startWith(''),
-        debounceTime(100),
-        distinctUntilChanged(),
-        mergeMap(filter => this.dataSource.loadLessons(this.course.id, filter, 'asc', 0, 5)),
-        takeUntil(this.kill$)
+        startWith({ pageIndex: 0, pageSize: 5 } as PageEvent),
+        mergeMap(page =>
+          this.filter.valueChanges.pipe(
+            startWith(''),
+            debounceTime(100),
+            distinctUntilChanged(),
+            mergeMap(filter =>
+              this.dataSource.loadLessons(
+                this.course.id,
+                filter,
+                'asc',
+                page.pageIndex,
+                page.pageSize
+              )
+            ),
+            takeUntil(this.kill$)
+          )
+        )
       )
       .subscribe()
   }
-
-  ngAfterViewInit() {}
 
   ngOnDestroy(): void {
     this.kill$.next()
