@@ -1,15 +1,17 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { FormControl } from '@angular/forms'
-import { MatPaginator, PageEvent } from '@angular/material'
+import { MatPaginator, PageEvent, MatSort } from '@angular/material'
 import { ActivatedRoute } from '@angular/router'
-import { Subject } from 'rxjs'
+import { Subject, merge, combineLatest } from 'rxjs'
 import {
   debounceTime,
   distinctUntilChanged,
   mergeMap,
   startWith,
   takeUntil,
-  tap
+  tap,
+  map,
+  filter
 } from 'rxjs/operators'
 import { Course } from '../model/course'
 import { CoursesService } from '../services/courses.service'
@@ -28,6 +30,7 @@ export class CourseComponent implements OnInit, AfterViewInit, OnDestroy {
   filter = new FormControl('')
 
   @ViewChild('paginator') paginator: MatPaginator
+  @ViewChild(MatSort) sort: MatSort
 
   constructor(private route: ActivatedRoute, private coursesService: CoursesService) {}
 
@@ -37,21 +40,31 @@ export class CourseComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.paginator.page
+    // Load lessons
+    combineLatest(
+      this.paginator.page.pipe(startWith({ pageIndex: 0, pageSize: 5 } as PageEvent)),
+      this.sort.sortChange.pipe(
+        startWith({ direction: 'asc' }),
+        map(sort => sort.direction),
+        filter(direction => !!direction),
+        tap(direction => {
+          this.paginator.pageIndex = 0
+        })
+      )
+    )
       .pipe(
-        startWith({ pageIndex: 0, pageSize: 5 } as PageEvent),
-        mergeMap(page =>
+        mergeMap(([page, direction]) =>
           this.filter.valueChanges.pipe(
             startWith(''),
-            debounceTime(100),
+            debounceTime(200),
             distinctUntilChanged(),
             mergeMap(filter =>
               this.dataSource.loadLessons(
                 this.course.id,
                 filter,
-                'asc',
-                page.pageIndex,
-                page.pageSize
+                direction,
+                this.paginator.pageIndex,
+                this.paginator.pageSize
               )
             ),
             takeUntil(this.kill$)
