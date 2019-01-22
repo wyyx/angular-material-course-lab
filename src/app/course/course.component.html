@@ -9,18 +9,19 @@
              matInput
              placeholder="Filter lessons" />
     </mat-form-field>
-    <!-- <div class="spinner-container">
-      <mat-spinner></mat-spinner>
-    </div> -->
     <div class="spinner-container"
          *ngIf="dataSource.loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
     <mat-table class="lessons-table "
+               matSort
+               [matSortDisableClear]="true"
                [dataSource]="dataSource">
       <!-- seqno -->
       <ng-container matColumnDef="seqNo">
-        <mat-header-cell *matHeaderCellDef>#</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef
+                         mat-sort-header
+                         start="desc">#</mat-header-cell>
         <mat-cell *matCellDef="let lesson">{{ lesson.seqNo }}</mat-cell>
       </ng-container>
       <!-- description -->
