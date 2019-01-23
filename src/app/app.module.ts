@@ -22,13 +22,20 @@ import {
   MatPaginatorModule,
   MatSortModule,
   MatInputModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatSelectModule
 } from '@angular/material'
 import { CoursesService } from './services/courses.service'
 import { CourseResolver } from './services/course.resolver'
 import { HttpClientModule } from '@angular/common/http'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { ReactiveFormsModule } from '@angular/forms'
+import { MatDialogModule } from '@angular/material/dialog'
+import { CourseDialogComponent } from './course-dialog/course-dialog.component'
+import { MatDatepickerModule } from '@angular/material/datepicker'
+import { MatMomentDateModule } from '@angular/material-moment-adapter'
+
+MatMomentDateModule
 
 @NgModule({
   declarations: [
@@ -37,7 +44,8 @@ import { ReactiveFormsModule } from '@angular/forms'
     AboutComponent,
     TopMenuComponent,
     CoursesCardListComponent,
-    CourseComponent
+    CourseComponent,
+    CourseDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -58,9 +66,14 @@ import { ReactiveFormsModule } from '@angular/forms'
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDialogModule,
+    MatDatepickerModule,
+    MatMomentDateModule,
+    MatSelectModule
   ],
   providers: [CoursesService, CourseResolver],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [CourseDialogComponent]
 })
 export class AppModule {}
