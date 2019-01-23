@@ -4,13 +4,11 @@
   margin: 0 auto;
 }
 .table-container {
-  background-color: white;
   position: relative;
 }
 
 .mat-form-field {
   width: 80%;
-  background-color: white;
 }
 
 .course-thumbnail {
